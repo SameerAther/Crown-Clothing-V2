@@ -29,6 +29,7 @@ const firebaseConfig = {
   appId: "1:248915096527:web:3708954b8d1ef2857718ba",
 };
 
+// Initialize Firebase with the configuration object
 const firebaseApp = initializeApp(firebaseConfig);
 
 const googleProvider = new GoogleAuthProvider();
@@ -38,36 +39,39 @@ googleProvider.setCustomParameters({
 });
 
 export const auth = getAuth();
+export const db = getFirestore();
+
+// Set up functions for signing in with Google via popup or redirect
 export const signInWithGooglePopup = () =>
   signInWithPopup(auth, googleProvider);
 export const signInWithGoogleRedirect = () =>
   signInWithRedirect(auth, googleProvider);
 
-export const db = getFirestore();
-
+// Set up a function for adding a collection of objects to the database
 export const addCollectionAndDocuments = async (
   collectionKey,
   objectsToAdd,
   field
 ) => {
-  const collectionRef = collection(db, collectionKey);
-  const batch = writeBatch(db);
+  const collectionRef = collection(db, collectionKey); // Get a reference to the collection
+  const batch = writeBatch(db); // Create a batch object for efficient writes to the database
 
+  // Iterate over each object to add to the collection
   objectsToAdd.forEach((object) => {
-    const docRef = doc(collectionRef, object.title.toLowerCase());
-    batch.set(docRef, object);
+    const docRef = doc(collectionRef, object.title.toLowerCase()); // Get a reference to the document in the collection
+    batch.set(docRef, object); // Add the object to the batch object
   });
 
-  await batch.commit();
-  console.log("done");
+  await batch.commit(); // Commit the batch object to the database
 };
 
+// Set up a function for getting all the documents in a collection
 export const getCategoriesAndDocuments = async () => {
-  const collectionRef = collection(db, "categories");
-  const q = query(collectionRef);
+  const collectionRef = collection(db, "categories"); // Get a reference to the "categories" collection
+  const q = query(collectionRef); // Create a query object to get all the documents in the collection
 
-  const querySnapshot = await getDocs(q);
-  return querySnapshot.docs.map(docSnapshot => docSnapshot.data());
+  const querySnapshot = await getDocs(q); // Execute the query and get a snapshot of the documents
+  return querySnapshot.docs.map(docSnapshot => docSnapshot.data()); // Return an array of the data objects for each document
 };
 
 export const createUserDocumentFromAuth = async (
