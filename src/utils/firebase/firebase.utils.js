@@ -38,6 +38,7 @@ googleProvider.setCustomParameters({
   prompt: "select_account",
 });
 
+// Initializing auth for authentication and db for firestore database.
 export const auth = getAuth();
 export const db = getFirestore();
 
